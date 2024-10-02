@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import crypto from 'crypto';
 
 export const generateAuthLink: RequestHandler = (req, res) => {
     //TODO: generate authentication link
@@ -12,6 +13,9 @@ export const generateAuthLink: RequestHandler = (req, res) => {
      5. Notify user to look inside the email to get the login link.
     */
 
+    //!  1. Generate Unique token for every user
+    const randomToken = crypto.randomBytes(36).toString('hex');
+
     console.log(req.body);
-    res.json({ ok: true })
+    res.json({ ok: true });
 }
