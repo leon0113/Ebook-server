@@ -1,5 +1,5 @@
 import { generateAuthLink } from "@/controllers/auth.controller";
-import { emailValidationSchema, validate } from "@/middlewares/validator";
+import { emailValidationSchema, validate } from "@/middlewares/validator.middleware";
 import { Router } from "express";
 
 const authRouter = Router();
