@@ -1,8 +1,10 @@
 import UserModel from "@/models/user.model";
 import VerificationTokenModel from "@/models/varificationToken.model";
+import { sendErrorResponse } from "@/utils/helper";
 import { sendVerificationMail } from "@/utils/mail";
 import crypto from 'crypto';
 import { RequestHandler } from "express";
+import jwt from 'jsonwebtoken';
 
 
 //TODO: generate authentication link
@@ -55,6 +57,46 @@ export const generateAuthLink: RequestHandler = async (req, res) => {
 
 //TODO: Verify the auth token coming from the link
 export const verifyAuthToken: RequestHandler = async (req, res) => {
-    console.log(req.query);
-    res.json({ ok: true })
+    const { token, userId } = req.query;
+
+    // verify query types
+    if (typeof token !== 'string' || typeof userId !== 'string') {
+        return sendErrorResponse({
+            status: 403,
+            message: 'Invalid request',
+            res,
+        })
+    };
+
+    const verificationToken = await VerificationTokenModel.findOne({ userId });
+
+    if (!verificationToken || !verificationToken.compare(token)) {
+        return sendErrorResponse({
+            status: 403,
+            message: 'Invalid token',
+            res,
+        })
+    };
+
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+        return sendErrorResponse({
+            status: 500,
+            message: 'No user exists',
+            res,
+        })
+    };
+
+    await VerificationTokenModel.findByIdAndDelete(verificationToken._id);
+
+    //TODO: Authentication of user
+    const payload = { userId: user._id };
+
+    const authToken = jwt.sign(payload, process.env.JWT_SECRET!, {
+        expiresIn: '7d'
+    })
+
+    res.json({ authToken })
 }
