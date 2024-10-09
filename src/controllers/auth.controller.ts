@@ -1,6 +1,6 @@
 import UserModel from "@/models/user.model";
 import VerificationTokenModel from "@/models/varificationToken.model";
-import { sendErrorResponse } from "@/utils/helper";
+import { FormatUserProfile, sendErrorResponse } from "@/utils/helper";
 import { sendVerificationMail } from "@/utils/mail";
 import crypto from 'crypto';
 import { RequestHandler } from "express";
@@ -96,7 +96,15 @@ export const verifyAuthToken: RequestHandler = async (req, res) => {
 
     const authToken = jwt.sign(payload, process.env.JWT_SECRET!, {
         expiresIn: '7d'
+    });
+
+
+    res.cookie('authToken', authToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // expires in 7 days
     })
 
-    res.json({ authToken })
+    res.redirect(`${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(FormatUserProfile(user))}`)
 }

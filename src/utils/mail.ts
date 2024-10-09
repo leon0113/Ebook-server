@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-interface VerficationMailOptions {
+interface VerificationMailOptions {
     link: string,
     to: string,
 };
@@ -17,7 +17,7 @@ const transport = nodemailer.createTransport({
 
 
 
-export async function sendVerificationMail(options: VerficationMailOptions) {
+export async function sendVerificationMail(options: VerificationMailOptions) {
     await transport.sendMail({
         to: options.to,
         from: process.env.VERIFICATION_MAIL,

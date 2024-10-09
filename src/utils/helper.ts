@@ -1,3 +1,4 @@
+import { UserDoc } from "@/models/user.model";
 import { Response } from "express";
 
 type ErrorMessageProp = {
@@ -8,4 +9,14 @@ type ErrorMessageProp = {
 
 export const sendErrorResponse = ({ status, message, res }: ErrorMessageProp) => {
     res.status(status).json({ message })
+}
+
+
+export const FormatUserProfile = (user: UserDoc) => {
+    return {
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        role: user.role,
+    }
 }
