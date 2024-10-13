@@ -5,6 +5,7 @@ import 'dotenv/config'
 import authRouter from './routes/auth.router';
 import { errorHandler } from "./middlewares/error.middleware";
 import cookieParser from 'cookie-parser';
+import { fileParser } from './middlewares/file.middleware';
 
 
 const app = express();
@@ -16,6 +17,10 @@ app.use(cookieParser());
 
 
 app.use('/auth', authRouter);
+app.use('/test', fileParser, (req, res) => {
+    console.log(req.files, req.body);
+    res.json({})
+});
 
 app.use(errorHandler)
 
