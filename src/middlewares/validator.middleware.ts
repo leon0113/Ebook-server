@@ -12,16 +12,12 @@ export const validate = <T extends ZodRawShape>(obj: T): RequestHandler => {
         const result = schema.safeParse(req.body);
 
         if (result.success) {
-
             req.body = result.data;
             next();
-
         } else {
-
             const err = result.error.flatten().fieldErrors;
             res.status(422).json({ err });
             return;
-
         }
     }
 }

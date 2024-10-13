@@ -11,7 +11,8 @@ import jwt from 'jsonwebtoken';
 //TODO: and send that link to users email address
 export const generateAuthLink: RequestHandler = async (req, res) => {
     /* 
-     1. Generate Unique token for every user
+     0. Create or Find user.
+     1. Generate Unique token for the user.
      2. Store that token securely inside the database so that we can validate it in future.
      3. Create a link which include that secure token and user information.
      4. Send that link to user's email address.
@@ -33,7 +34,7 @@ export const generateAuthLink: RequestHandler = async (req, res) => {
     // Delete if there is already a token
     await VerificationTokenModel.findOneAndDelete({ userId });
 
-    //!  1. Generate Unique token for every user
+    //!  1. Generate New Unique token for the user
     const randomToken = crypto.randomBytes(36).toString('hex');
 
     //! 2. Store that token securely inside the database so that we can validate it in future.
@@ -106,5 +107,18 @@ export const verifyAuthToken: RequestHandler = async (req, res) => {
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // expires in 7 days
     })
 
-    res.redirect(`${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(FormatUserProfile(user))}`)
+    // res.redirect(`${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(FormatUserProfile(user))}`)
+    res.send()
+};
+
+//TODO: Get User info
+export const sendProfileInfo: RequestHandler = (req, res) => {
+    res.json({
+        profile: req.user
+    })
+}
+
+//TODO: Logout user from the application
+export const logoutUser: RequestHandler = (req, res) => {
+    res.clearCookie('authToken').json(`User of email: ${req.user.email} has been logout`)
 }
