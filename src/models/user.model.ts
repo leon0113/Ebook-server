@@ -3,8 +3,10 @@ import { model, ObjectId, Schema } from "mongoose";
 export interface UserDoc {
     _id: ObjectId;
     email: string;
-    role: 'user' | 'author',
-    name?: string
+    role: 'user' | 'author';
+    name?: string;
+    signedUp: boolean;
+    avatar?: { url: string; id: string }
 }
 
 const userSchema = new Schema<UserDoc>({
@@ -23,6 +25,15 @@ const userSchema = new Schema<UserDoc>({
         enum: ['user', 'author'],
         default: 'user'
     },
+    signedUp: {
+        type: Boolean,
+        default: false
+    },
+    avatar: {
+        type: Object,
+        url: String,
+        id: String
+    }
 })
 
 const UserModel = model("User", userSchema);

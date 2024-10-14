@@ -17,7 +17,7 @@ export const fileParser: RequestHandler = async (req, res, next) => {
     if (!req.body) req.body = {};
     if (!req.files) req.files = {};
 
-    for (const key in fields) {                   // fields { name: [ 'Leon' ], age: [ '26' ] }
+    for (const key in fields) {
         const fieldValue = fields[key];
         if (fieldValue) {
             req.body[key] = fieldValue[0];
@@ -37,6 +37,8 @@ export const fileParser: RequestHandler = async (req, res, next) => {
 
     next()
 }
+
+// fields { name: [ 'Leon' ], age: [ '26' ] }
 
 /*
 files {

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { sendErrorResponse } from "@/utils/helper";
+import { FormatUserProfile, sendErrorResponse } from "@/utils/helper";
 import { RequestHandler } from "express";
 import UserModel from '@/models/user.model';
 
@@ -41,12 +41,7 @@ export const isAuth: RequestHandler = async (req, res, next) => {
         })
     };
 
-    req.user = {
-        id: user._id.toString(),
-        name: user.name,
-        email: user.email,
-        role: user.role
-    }
+    req.user = FormatUserProfile(user);
 
     next();
 }
