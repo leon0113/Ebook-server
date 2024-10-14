@@ -11,6 +11,7 @@ declare global {
 }
 
 export const fileParser: RequestHandler = async (req, res, next) => {
+
     const form = formidable();
     const [fields, files] = await form.parse(req);
 

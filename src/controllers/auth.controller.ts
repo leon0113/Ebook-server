@@ -1,3 +1,4 @@
+import cloudinary from "@/cloud/cloudinary";
 import UserModel from "@/models/user.model";
 import VerificationTokenModel from "@/models/varificationToken.model";
 import { FormatUserProfile, sendErrorResponse } from "@/utils/helper";
@@ -123,7 +124,7 @@ export const logoutUser: RequestHandler = (req, res) => {
     res.clearCookie('authToken').json(`User of email: ${req.user.email} has been logout`)
 }
 
-//TODO: Logout user from the application
+//TODO: update user info for an existing user
 export const updateProfile: RequestHandler = async (req, res) => {
 
     const user = await UserModel.findByIdAndUpdate(req.user.id, { name: req.body.name, signedUp: true }, {
@@ -138,7 +139,19 @@ export const updateProfile: RequestHandler = async (req, res) => {
         })
     }
     // if there is any file upload them to cloud and update database
+    const file = req.files.avatar;
 
+    if (!Array.isArray(file)) {
+        const { public_id, secure_url } = await cloudinary.uploader.upload(file.filepath, {
+            width: 300,
+            height: 300,
+            gravity: 'face',
+            crop: 'fill'
+        });
+
+        user.avatar = { id: public_id, url: secure_url };
+        await user.save();
+    }
 
     // res.redirect(`${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(FormatUserProfile(user))}`)
     res.json({ profile: FormatUserProfile(user) })
