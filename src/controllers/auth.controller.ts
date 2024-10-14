@@ -1,6 +1,7 @@
 import cloudinary from "@/cloud/cloudinary";
 import UserModel from "@/models/user.model";
 import VerificationTokenModel from "@/models/varificationToken.model";
+import { cloudinaryUpload } from "@/utils/cloudinaryUpload";
 import { FormatUserProfile, sendErrorResponse } from "@/utils/helper";
 import { sendVerificationMail } from "@/utils/mail";
 import crypto from 'crypto';
@@ -142,14 +143,8 @@ export const updateProfile: RequestHandler = async (req, res) => {
     const file = req.files.avatar;
 
     if (!Array.isArray(file)) {
-        const { public_id, secure_url } = await cloudinary.uploader.upload(file.filepath, {
-            width: 300,
-            height: 300,
-            gravity: 'face',
-            crop: 'fill'
-        });
 
-        user.avatar = { id: public_id, url: secure_url };
+        user.avatar = await cloudinaryUpload(file, user.avatar?.id);
         await user.save();
     }
 
