@@ -9,15 +9,14 @@ import { RequestHandler } from "express";
 import jwt from 'jsonwebtoken';
 
 
-//TODO: generate authentication link
-//TODO: and send that link to users email address
+//TODO: generate authentication link and send that link to users email address
 export const generateAuthLink: RequestHandler = async (req, res) => {
     /* 
      0. Create or Find user.
      1. Generate Unique token for the user.
      2. Store that token securely inside the database so that we can validate it in future.
      3. Create a link which include that secure token and user information.
-     4. Send that link to user's email address.
+     4. Send that link to user's email address with token no and user id.
      5. Notify user to look inside the email to get the login link.
     */
 
@@ -87,7 +86,7 @@ export const verifyAuthToken: RequestHandler = async (req, res) => {
     if (!user) {
         return sendErrorResponse({
             status: 500,
-            message: 'No user exists',
+            message: 'No user exist!',
             res,
         })
     };
@@ -142,7 +141,7 @@ export const updateProfile: RequestHandler = async (req, res) => {
     // if there is any file upload them to cloud and update database
     const file = req.files.avatar;
 
-    if (!Array.isArray(file)) {
+    if (file && !Array.isArray(file)) {
 
         user.avatar = await cloudinaryUpload(file, user.avatar?.id);
         await user.save();

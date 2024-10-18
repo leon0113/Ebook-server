@@ -1,12 +1,12 @@
 import cloudinary from '@/cloud/cloudinary';
 import { File } from 'formidable';
 
-type UploadResult = {
+type TAvatar = {
     id: string;
     url: string;
 };
 
-export const cloudinaryUpload = async (file: File, avatarId?: string): Promise<UploadResult> => {
+export const cloudinaryUpload = async (file: File, avatarId?: string): Promise<TAvatar> => {
     // if the user already has a avatar. Remove it first from cloudinary
     if (avatarId) {
         await cloudinary.uploader.destroy(avatarId)
