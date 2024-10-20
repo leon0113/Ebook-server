@@ -35,7 +35,6 @@ const userSchema = new Schema<UserDoc>({
         url: String,
         id: String
     },
-
     authorId: {
         type: Schema.Types.ObjectId,
         ref: 'Author'
