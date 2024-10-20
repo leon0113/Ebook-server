@@ -28,10 +28,11 @@ const authorSchema = new Schema<AuthorDoc>({
     },
     slug: {
         type: String,
-        required: true,
         unique: true
     },
-    socialLinks: [String],
+    socialLinks: {
+        type: [String]
+    },
     books: [
         {
             type: Schema.Types.ObjectId,

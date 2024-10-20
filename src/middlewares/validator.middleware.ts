@@ -18,7 +18,7 @@ export const newAuthorSchema = z.object({
         required_error: "About is missing!",
         invalid_type_error: "Invalid about"
     }).trim().min(100, "Please write at least 100 characters about yourself"),
-    socialLinks: z.string().url("Provide correct links").optional()
+    socialLinks: z.array(z.string().url("Provide correct links").optional())
 })
 
 export const validate = <T extends unknown>(schema: ZodType<T>): RequestHandler => {
