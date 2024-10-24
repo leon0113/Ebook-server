@@ -1,7 +1,7 @@
 import cloudinary from "@/cloud/cloudinary";
 import UserModel from "@/models/user.model";
 import VerificationTokenModel from "@/models/varificationToken.model";
-import { cloudinaryUpload } from "@/utils/cloudinaryUpload";
+import { cloudinaryUpload } from "@/utils/uploadFiles";
 import { FormatUserProfile, sendErrorResponse } from "@/utils/helper";
 import { sendVerificationMail } from "@/utils/mail";
 import crypto from 'crypto';

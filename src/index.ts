@@ -7,20 +7,35 @@ import { errorHandler } from "./middlewares/error.middleware";
 import cookieParser from 'cookie-parser';
 import { fileParser } from './middlewares/file.middleware';
 import authorRouter from './routes/author.route';
+import bookRouter from './routes/book.route';
+import path from 'path';
+import formidable from 'formidable';
 
 
 const app = express();
 const port = process.env.PORT || 8000;
+const publicPath = path.join(__dirname, './books');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser());
+// to server book data from nodejs 
+app.use('/books', express.static(publicPath))
 
 
 app.use('/auth', authRouter);
 app.use('/author', authorRouter);
-app.use('/test', fileParser, (req, res) => {
-    console.log(req.files, req.body);
+app.use('/book', bookRouter);
+
+
+app.use('/test', async (req, res) => {
+    const form = formidable({
+        uploadDir: path.join(__dirname, './books'),
+        filename(name, ext, part, form) {
+            return name + '.jpg'
+        },
+    });
+    await form.parse(req)
     res.json({})
 });
 

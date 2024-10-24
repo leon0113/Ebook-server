@@ -1,7 +1,7 @@
-import { model, ObjectId, Schema, Model } from "mongoose";
+import { model, ObjectId, Schema, Model, Types } from "mongoose";
 
 export interface BookDoc {
-    author: ObjectId;
+    authorId: Types.ObjectId;
     title: string;
     slug: string;
     description: string;
@@ -19,13 +19,13 @@ export interface BookDoc {
     };
     fileInfo: {
         id: string,
-        url: string
+        size: string
     };
 };
 
 
 const bookSchema = new Schema<BookDoc>({
-    author: {
+    authorId: {
         type: Schema.Types.ObjectId,
         ref: "Author",
         required: true
@@ -49,6 +49,11 @@ const bookSchema = new Schema<BookDoc>({
         type: String,
         required: true,
         trim: true
+    },
+    slug: {
+        type: String,
+        trim: true,
+        unique: true,
     },
     genre: {
         type: String,
@@ -78,11 +83,11 @@ const bookSchema = new Schema<BookDoc>({
     fileInfo: {
         type: Object,
         required: true,
-        url: {
+        id: {
             type: String,
             required: true
         },
-        id: {
+        size: {
             type: String,
             required: true
         }
