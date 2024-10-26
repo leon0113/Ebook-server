@@ -1,4 +1,5 @@
 import { model, ObjectId, Schema, Model, Types } from "mongoose";
+import { number } from "zod";
 
 export interface BookDoc {
     authorId: Types.ObjectId;
@@ -9,6 +10,7 @@ export interface BookDoc {
     publishedAt: Date;
     publicationName: string;
     genre: string;
+    averageRating?: number,
     price: {
         mrp: number,
         sale: number
@@ -59,6 +61,9 @@ const bookSchema = new Schema<BookDoc>({
         type: String,
         required: true,
         trim: true
+    },
+    averageRating: {
+        type: Number
     },
     publishedAt: {
         type: Date,
