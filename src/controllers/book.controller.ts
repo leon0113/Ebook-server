@@ -109,14 +109,13 @@ export const updateBook: RequestHandler<{}, {}, updateBookReqHandler> = async (r
         fs.unlinkSync(oldFilePath)
 
         // add new book to the storage
-        const newFileName = slugify(`${bookToUpdate._id} ${bookToUpdate.title}`, {
+        const newFileName = slugify(`${bookToUpdate._id} ${bookToUpdate.title}.epub`, {
             replacement: '-',
             lower: true,
         });
         const newFilePath = path.join(uploadPath, newFileName);
         const file = fs.readFileSync(book.filepath);
         fs.writeFileSync(newFilePath, file);
-
 
         bookToUpdate.fileInfo = {
             id: newFileName,
@@ -133,8 +132,6 @@ export const updateBook: RequestHandler<{}, {}, updateBookReqHandler> = async (r
         bookToUpdate.cover = await uploadCoverToCloudinary(cover);
     }
 
-
     await bookToUpdate.save();
-
     res.json({ message: "Book updated successfully" });
 } 

@@ -30,7 +30,7 @@ export const uploadCoverToCloudinary = async (file: File) => {
     return { id: public_id, url: secure_url }
 }
 
-export const uploadBookToLocalDir = (file: File, uniqueFileName: string) => {
+export const uploadBookToLocalDir = (book: File, uniqueFileName: string) => {
     const bookStoragePath = path.join(__dirname, '../books');
 
     if (!fs.existsSync(bookStoragePath)) {
@@ -38,7 +38,7 @@ export const uploadBookToLocalDir = (file: File, uniqueFileName: string) => {
     };
 
     const filePath = path.join(bookStoragePath, uniqueFileName);
-    fs.writeFileSync(filePath, fs.readFileSync(file.filepath));
+    fs.writeFileSync(filePath, fs.readFileSync(book.filepath));
 
 
 }

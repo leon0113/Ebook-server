@@ -10,6 +10,7 @@ import authorRouter from './routes/author.route';
 import bookRouter from './routes/book.route';
 import path from 'path';
 import formidable from 'formidable';
+import reviewRouter from './routes/review.route';
 
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/books', express.static(publicPath))
 app.use('/auth', authRouter);
 app.use('/author', authorRouter);
 app.use('/book', bookRouter);
+app.use('/review', reviewRouter);
 
 
 app.use('/test', async (req, res) => {
