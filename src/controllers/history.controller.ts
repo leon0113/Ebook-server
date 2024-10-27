@@ -1,6 +1,8 @@
 import HistoryModel from "@/models/history.model";
 import { bookHistoryReqHandler } from "@/types";
+import { sendErrorResponse } from "@/utils/helper";
 import { RequestHandler } from "express";
+import { isValidObjectId } from "mongoose";
 
 type highlight = { fill: string, selection: string }
 
@@ -53,3 +55,37 @@ export const updateBookHistory: RequestHandler = async (
     await history.save();
     res.send();
 };
+
+
+export const getBookHistory: RequestHandler = async (req, res) => {
+    const { bookId } = req.params;
+
+    if (!isValidObjectId(bookId)) {
+        return sendErrorResponse({
+            res,
+            status: 422,
+            message: 'Invalid book id',
+        })
+    };
+
+    const history = await HistoryModel.findOne({ userId: req.user.id, bookId });
+    if (!history) {
+        return sendErrorResponse({
+            res,
+            status: 404,
+            message: 'no history found',
+        })
+    }
+
+    const formatHistory = {
+        lastLocation: history.lastLocationBook,
+        highlights: history.highlights.map((highlight: highlight) => {
+            return {
+                fill: highlight.fill,
+                selection: highlight.selection,
+            }
+        })
+    };
+
+    res.json({ formatHistory })
+}
