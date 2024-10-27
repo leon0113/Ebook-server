@@ -142,6 +142,36 @@ export const newReviewSchema = z.object({
     })
 })
 
+export const historyValidationSchema = z.object({
+    bookId: z.string({
+        required_error: "Book ID is missing!",
+        invalid_type_error: "Invalid book ID"
+    }).transform((value, context) => {
+        if (!isValidObjectId(value)) {
+            context.addIssue({ code: "custom", message: "Invalid book id" });
+            return z.NEVER
+        }
+
+        return value;
+    }),
+
+    lastLocation: z.string({
+        invalid_type_error: "Invalid Last location"
+    }).trim().optional(),
+
+    highlights: z.array(
+        z.object({
+            selection: z.string({
+                required_error: "Selection is missing!",
+                invalid_type_error: "Invalid selection"
+            }).trim().optional(),
+            fill: z.string({
+                required_error: "Fill is missing!",
+                invalid_type_error: "Invalid fill"
+            }).trim().optional(),
+        })
+    ).optional()
+})
 
 //! the main validation function for all the schema's
 export const validate = <T extends ZodRawShape>(schema: ZodObject<T>): RequestHandler => {
