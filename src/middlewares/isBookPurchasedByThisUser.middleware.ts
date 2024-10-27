@@ -9,7 +9,7 @@ export const isBookPurchasedByThisUser: RequestHandler<{}, {}, newReviewReqHandl
         return sendErrorResponse({
             res,
             status: 403,
-            message: 'Sorry you are not allowed to add review!'
+            message: 'Sorry you are not allowed for this action'
         })
     }
 

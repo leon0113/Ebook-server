@@ -170,7 +170,12 @@ export const historyValidationSchema = z.object({
                 invalid_type_error: "Invalid fill"
             }).trim().optional(),
         })
-    ).optional()
+    ).optional(),
+
+    removeHighlight: z.boolean({
+        required_error: "remove highlight is missing!",
+        invalid_type_error: "Invalid remove highlight"
+    })
 })
 
 //! the main validation function for all the schema's

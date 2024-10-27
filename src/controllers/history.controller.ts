@@ -2,11 +2,14 @@ import HistoryModel from "@/models/history.model";
 import { bookHistoryReqHandler } from "@/types";
 import { RequestHandler } from "express";
 
-export const updateBookHistory: RequestHandler<{}, {}, bookHistoryReqHandler> = async (
+type highlight = { fill: string, selection: string }
+
+
+export const updateBookHistory: RequestHandler = async (
     req,
     res
 ) => {
-    const { bookId, highlights = [], lastLocation } = req.body;
+    const { bookId, highlights = [], lastLocation, removeHighlight } = req.body;
 
     let history = await HistoryModel.findOne({
         bookId,
@@ -18,20 +21,32 @@ export const updateBookHistory: RequestHandler<{}, {}, bookHistoryReqHandler> = 
             userId: req.user.id,
             bookId,
             lastLocation,
-            highlights: highlights.map((highlight) => ({
+            highlights: highlights.map((highlight: { fill: string, selection: string }) => ({
                 fill: highlight.fill ?? "",
                 selection: highlight.selection ?? "",
             })),
         });
     } else {
         if (lastLocation) history.lastLocationBook = lastLocation;
-        if (highlights.length) {
+        // storing highlights
+        if (highlights.length && !removeHighlight) {
             history.highlights.push(
-                ...highlights.map((highlight) => ({
+                ...highlights.map((highlight: highlight) => ({
                     fill: highlight.fill ?? "",
                     selection: highlight.selection ?? "",
                 }))
             );
+        }
+        // removing highlights
+        if (highlights.length && removeHighlight) {
+            history.highlights = history.highlights.filter((h) => {
+                const highlight = highlights.find((item: highlight) => {
+                    if (item.selection === h.selection) {
+                        return item
+                    }
+                });
+                if (!highlight) return true;
+            });
         }
     }
 
