@@ -12,36 +12,7 @@ export const addReview: RequestHandler<{}, {}, newReviewReqHandler> = async (req
         rating: rating, content: content
     }, { upsert: true });
 
-    // aggregate average rating of the book
-    // const [result] = await ReviewModel.aggregate<{ avgRating: number }>([
-    //     {
-    //         $match: {
-    //             bookId: new Types.ObjectId(bookId)
-    //         },
-    //         $group: {
-    //             _id: null,
-    //             avgRating: { $avg: "$rating" }
-    //         }
-    //     }
-    // ]);
-    // const [result] = await ReviewModel.aggregate<{ avgRating: number }>([
-    //     {
-    //         $match: {
-    //             book: new Types.ObjectId(bookId),
-    //         },
-    //     },
-    //     {
-    //         $group: {
-    //             _id: null,
-    //             avgRating: { $avg: "$rating" },
-    //         },
-    //     },
-    // ]);
-    // console.log(result);
-    // // update average rating to the book
-    // await BookModel.findByIdAndUpdate(bookId, { averageRating: result?.avgRating });
-
-
+    // find average rating of the book by aggregating 
     const [result] = await ReviewModel.aggregate<{ averageRating: number }>([
         {
             $match: {
@@ -55,11 +26,10 @@ export const addReview: RequestHandler<{}, {}, newReviewReqHandler> = async (req
             },
         },
     ]);
-    console.log(result);
+    // update book model with the avg rating 
     await BookModel.findByIdAndUpdate(bookId, {
         averageRating: result?.averageRating,
     });
-
 
     res.json({ message: "Review added" })
 };

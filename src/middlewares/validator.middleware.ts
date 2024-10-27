@@ -143,7 +143,7 @@ export const newReviewSchema = z.object({
 })
 
 
-
+//! the main validation function for all the schema's
 export const validate = <T extends ZodRawShape>(schema: ZodObject<T>): RequestHandler => {
     return (req, res, next) => {
 
