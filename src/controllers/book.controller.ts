@@ -11,6 +11,22 @@ import { ObjectId, Types } from "mongoose";
 import path from "path";
 import slugify from "slugify";
 
+interface PopulatedBooks {
+
+    cover?: {
+        url: string;
+        id: string;
+    };
+    _id: ObjectId;
+    authorId: {
+        _id: ObjectId;
+        name: string;
+        slug: string;
+    };
+    title: string;
+
+}
+
 export const createNewBook: RequestHandler<{}, {}, createBookReqHandler> = async (req, res) => {
 
     const { body, files, user } = req;
@@ -137,21 +153,6 @@ export const updateBook: RequestHandler<{}, {}, updateBookReqHandler> = async (r
     res.json({ message: "Book updated successfully" });
 };
 
-interface PopulatedBooks {
-
-    cover?: {
-        url: string;
-        id: string;
-    };
-    _id: ObjectId;
-    authorId: {
-        _id: ObjectId;
-        name: string;
-        slug: string;
-    };
-    title: string;
-
-}
 
 export const getAllPurchasedBooks: RequestHandler = async (req, res) => {
     const user = await UserModel.findById(req.user.id).populate<{ books: PopulatedBooks[] }>({ path: "books", select: 'authorId title cover', populate: { path: "authorId", select: 'slug name' } });
@@ -172,3 +173,42 @@ export const getAllPurchasedBooks: RequestHandler = async (req, res) => {
         }))
     })
 };
+
+
+export const getBooksPublicDetails: RequestHandler = async (req, res) => {
+    const { slug } = req.params;
+    const book = await BookModel.findOne({ slug }).populate<{ authorId: PopulatedBooks['authorId'] }>({ path: 'authorId', select: 'name slug' })
+
+    if (!book) {
+        return sendErrorResponse({
+            res, status: 404, message: 'No book available'
+        })
+    };
+
+    const { _id, title, cover, authorId, slug: bookSlug, description, genre, language, publishedAt, publicationName, price, fileInfo, averageRating } = book;
+
+    res.json({
+        book: {
+            id: _id,
+            title,
+            cover: cover?.url,
+            authorId: {
+                id: authorId._id,
+                name: authorId.name,
+                slug: authorId.slug
+            },
+            slug: bookSlug,
+            description,
+            genre,
+            rating: averageRating?.toFixed(1),
+            language,
+            publishedAt: publishedAt.toISOString().split("T")[0],
+            publicationName,
+            price: {
+                mrp: (price.mrp / 100).toFixed(2),
+                sale: (price.sale / 100).toFixed(2)
+            },
+            fileInfo
+        }
+    })
+}
