@@ -3,7 +3,7 @@ import ReviewModel from "@/models/review.model";
 import { newReviewReqHandler } from "@/types";
 import { sendErrorResponse } from "@/utils/helper";
 import { RequestHandler } from "express";
-import { isValidObjectId, Types } from "mongoose";
+import { isValidObjectId, ObjectId, Types } from "mongoose";
 
 export const addReview: RequestHandler<{}, {}, newReviewReqHandler> = async (req, res) => {
     const { bookId, rating, content } = req.body;
@@ -35,7 +35,6 @@ export const addReview: RequestHandler<{}, {}, newReviewReqHandler> = async (req
 };
 
 
-
 export const getReview: RequestHandler = async (req, res) => {
     const { bookId } = req.params;
 
@@ -61,5 +60,34 @@ export const getReview: RequestHandler = async (req, res) => {
     res.json({
         rating: review.rating,
         content: review.content
+    })
+};
+
+interface authorIdType {
+    _id: ObjectId
+    name: string;
+    avatar: {
+        url: string;
+        id: string
+    };
+}
+
+export const getPublicReview: RequestHandler = async (req, res) => {
+
+    const reviews = await ReviewModel.find(({ bookId: req.params.bookId })).populate<{ userId: authorIdType }>({ path: 'userId', select: 'name avatar' });
+    res.json({
+        reviews: reviews.map(r => {
+            return {
+                id: r._id,
+                rating: r.rating,
+                date: r.createdAt.toISOString().split('T')[0],
+                content: r.content,
+                userId: {
+                    id: r.userId._id,
+                    name: r.userId.name,
+                    avatar: r.userId.avatar
+                }
+            }
+        })
     })
 }

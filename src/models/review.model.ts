@@ -4,7 +4,8 @@ interface ReviewDoc {
     userId: ObjectId;
     bookId: ObjectId;
     rating: number;
-    content?: string
+    content?: string;
+    createdAt: Date
 };
 
 
@@ -33,6 +34,6 @@ const reviewSchema = new Schema<ReviewDoc>({
 
 
 
-const ReviewModel = model('review', reviewSchema);
+const ReviewModel = model('Review', reviewSchema);
 
 export default ReviewModel as Model<ReviewDoc>
