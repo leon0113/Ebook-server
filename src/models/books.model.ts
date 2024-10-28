@@ -100,6 +100,6 @@ const bookSchema = new Schema<BookDoc>({
 });
 
 
-const BookModel = model('book', bookSchema);
+const BookModel = model('Book', bookSchema);
 
 export default BookModel as Model<BookDoc>

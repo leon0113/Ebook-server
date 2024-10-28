@@ -1,12 +1,13 @@
 import cloudinary from "@/cloud/cloudinary";
 import AuthorModel from "@/models/author.model";
 import BookModel, { BookDoc } from "@/models/books.model";
+import UserModel from "@/models/user.model";
 import { createBookReqHandler, updateBookReqHandler } from "@/types";
 import { formatFileSize, sendErrorResponse } from "@/utils/helper";
 import { uploadBookToLocalDir, uploadCoverToCloudinary } from "@/utils/uploadFiles";
 import { RequestHandler } from "express";
 import fs from 'fs';
-import { Types } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 import path from "path";
 import slugify from "slugify";
 
@@ -134,4 +135,40 @@ export const updateBook: RequestHandler<{}, {}, updateBookReqHandler> = async (r
 
     await bookToUpdate.save();
     res.json({ message: "Book updated successfully" });
-} 
+};
+
+interface PopulatedBooks {
+
+    cover?: {
+        url: string;
+        id: string;
+    };
+    _id: ObjectId;
+    authorId: {
+        _id: ObjectId;
+        name: string;
+        slug: string;
+    };
+    title: string;
+
+}
+
+export const getAllPurchasedBooks: RequestHandler = async (req, res) => {
+    const user = await UserModel.findById(req.user.id).populate<{ books: PopulatedBooks[] }>({ path: "books", select: 'authorId title cover', populate: { path: "authorId", select: 'slug name' } });
+    if (!user) {
+        res.json({ books: [] });
+        return;
+    };
+
+    res.json({
+        books: user?.books.map(book => ({
+            id: book._id,
+            title: book.title,
+            cover: book.cover?.url,
+            author: {
+                name: book.authorId.name,
+                slug: book.authorId.slug
+            }
+        }))
+    })
+};

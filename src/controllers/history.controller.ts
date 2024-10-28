@@ -1,10 +1,9 @@
 import HistoryModel from "@/models/history.model";
-import { bookHistoryReqHandler } from "@/types";
 import { sendErrorResponse } from "@/utils/helper";
 import { RequestHandler } from "express";
 import { isValidObjectId } from "mongoose";
 
-type highlight = { fill: string, selection: string }
+type highlightType = { fill: string, selection: string }
 
 
 export const updateBookHistory: RequestHandler = async (
@@ -33,7 +32,7 @@ export const updateBookHistory: RequestHandler = async (
         // storing highlights
         if (highlights.length && !removeHighlight) {
             history.highlights.push(
-                ...highlights.map((highlight: highlight) => ({
+                ...highlights.map((highlight: highlightType) => ({
                     fill: highlight.fill ?? "",
                     selection: highlight.selection ?? "",
                 }))
@@ -42,7 +41,7 @@ export const updateBookHistory: RequestHandler = async (
         // removing highlights
         if (highlights.length && removeHighlight) {
             history.highlights = history.highlights.filter((h) => {
-                const highlight = highlights.find((item: highlight) => {
+                const highlight = highlights.find((item: highlightType) => {
                     if (item.selection === h.selection) {
                         return item
                     }
@@ -79,7 +78,7 @@ export const getBookHistory: RequestHandler = async (req, res) => {
 
     const formatHistory = {
         lastLocation: history.lastLocationBook,
-        highlights: history.highlights.map((highlight: highlight) => {
+        highlights: history.highlights.map((highlight: highlightType) => {
             return {
                 fill: highlight.fill,
                 selection: highlight.selection,
