@@ -24,7 +24,6 @@ interface PopulatedBooks {
         slug: string;
     };
     title: string;
-
 }
 
 export const createNewBook: RequestHandler<{}, {}, createBookReqHandler> = async (req, res) => {
@@ -210,5 +209,31 @@ export const getBooksPublicDetails: RequestHandler = async (req, res) => {
             },
             fileInfo
         }
+    })
+};
+
+
+export const getBooksByGenre: RequestHandler = async (req, res) => {
+    const { genre } = req.params;
+
+    const books = BookModel.find({ genre }).limit(5);
+
+    res.json({
+        books: (await books).map((book) => {
+            const { _id, title, cover, averageRating, slug, genre, price: { mrp, sale }, language } = book;
+            return {
+                id: _id,
+                title,
+                cover: cover?.url,
+                slug,
+                genre,
+                rating: averageRating?.toFixed(1),
+                language,
+                price: {
+                    mrp: (mrp / 100).toFixed(2),
+                    sale: (sale / 100).toFixed(2)
+                },
+            }
+        })
     })
 }

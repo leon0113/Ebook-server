@@ -5,6 +5,15 @@ import { sendErrorResponse } from "@/utils/helper";
 import { RequestHandler } from "express";
 import { isValidObjectId, ObjectId, Types } from "mongoose";
 
+interface userIdType {
+    _id: ObjectId
+    name: string;
+    avatar: {
+        url: string;
+        id: string
+    };
+}
+
 export const addReview: RequestHandler<{}, {}, newReviewReqHandler> = async (req, res) => {
     const { bookId, rating, content } = req.body;
 
@@ -63,18 +72,10 @@ export const getReview: RequestHandler = async (req, res) => {
     })
 };
 
-interface authorIdType {
-    _id: ObjectId
-    name: string;
-    avatar: {
-        url: string;
-        id: string
-    };
-}
 
 export const getPublicReview: RequestHandler = async (req, res) => {
 
-    const reviews = await ReviewModel.find(({ bookId: req.params.bookId })).populate<{ userId: authorIdType }>({ path: 'userId', select: 'name avatar' });
+    const reviews = await ReviewModel.find(({ bookId: req.params.bookId })).populate<{ userId: userIdType }>({ path: 'userId', select: 'name avatar' });
     res.json({
         reviews: reviews.map(r => {
             return {
