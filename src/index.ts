@@ -1,17 +1,18 @@
-import 'express-async-errors';
-import "@/db/connect"
-import express from 'express';
-import 'dotenv/config'
-import authRouter from './routes/auth.router';
-import { errorHandler } from "./middlewares/error.middleware";
+import "@/db/connect";
 import cookieParser from 'cookie-parser';
-import { fileParser } from './middlewares/file.middleware';
+import 'dotenv/config';
+import express from 'express';
+import 'express-async-errors';
+import formidable from 'formidable';
+import path from 'path';
+import { errorHandler } from "./middlewares/error.middleware";
+import { isAuth } from './middlewares/isAuth.middleware';
+import { isValidReadingRequest } from './middlewares/isValidReadingRequest.middleware';
+import authRouter from './routes/auth.router';
 import authorRouter from './routes/author.route';
 import bookRouter from './routes/book.route';
-import path from 'path';
-import formidable from 'formidable';
-import reviewRouter from './routes/review.route';
 import historyRouter from './routes/history.route';
+import reviewRouter from './routes/review.route';
 
 
 const app = express();
@@ -22,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser());
 // to server book data from nodejs 
-app.use('/books', express.static(publicPath))
+app.use('/books', isAuth, isValidReadingRequest, express.static(publicPath))
 
 
 app.use('/auth', authRouter);

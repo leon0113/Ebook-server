@@ -1,6 +1,7 @@
 import cloudinary from "@/cloud/cloudinary";
 import AuthorModel from "@/models/author.model";
 import BookModel, { BookDoc } from "@/models/books.model";
+import HistoryModel from "@/models/history.model";
 import UserModel from "@/models/user.model";
 import { createBookReqHandler, updateBookReqHandler } from "@/types";
 import { formatFileSize, sendErrorResponse } from "@/utils/helper";
@@ -24,6 +25,11 @@ interface PopulatedBooks {
         slug: string;
     };
     title: string;
+};
+
+interface settingType {
+    lastLocationBook: string;
+    highlights: { fill: string; selection: string }[];
 }
 
 export const createNewBook: RequestHandler<{}, {}, createBookReqHandler> = async (req, res) => {
@@ -216,10 +222,10 @@ export const getBooksPublicDetails: RequestHandler = async (req, res) => {
 export const getBooksByGenre: RequestHandler = async (req, res) => {
     const { genre } = req.params;
 
-    const books = BookModel.find({ genre }).limit(5);
+    const books = await BookModel.find({ genre }).limit(5);
 
     res.json({
-        books: (await books).map((book) => {
+        books: books.map((book) => {
             const { _id, title, cover, averageRating, slug, genre, price: { mrp, sale }, language } = book;
             return {
                 id: _id,
@@ -235,5 +241,49 @@ export const getBooksByGenre: RequestHandler = async (req, res) => {
                 },
             }
         })
+    })
+};
+
+
+export const generateBookAccessUrl: RequestHandler = async (req, res) => {
+    const { slug } = req.params;
+
+    const book = await BookModel.findOne({ slug });
+
+    if (!book) {
+        return sendErrorResponse({
+            res,
+            status: 404,
+            message: 'Book not found',
+        })
+    };
+
+    const user = await UserModel.findOne({ _id: req.user.id, books: book._id });
+
+    if (!user) {
+        return sendErrorResponse({
+            res,
+            status: 404,
+            message: 'User not found',
+        })
+    };
+
+    const history = await HistoryModel.findOne({ bookId: book._id, userId: user._id });
+
+
+
+    const settings: settingType = {
+        lastLocationBook: '',
+        highlights: []
+    }
+
+    if (history) {
+        settings.highlights = history.highlights.map(h => ({ fill: h.fill, selection: h.selection }));
+        settings.lastLocationBook = history.lastLocationBook;
+    }
+
+    res.json({
+        settings,
+        url: `${process.env.BOOK_API_URL}/${book.fileInfo.id}`
     })
 }

@@ -8,6 +8,6 @@ const historyRouter = Router();
 
 historyRouter.post('/', isAuth, validate(historyValidationSchema), isBookPurchasedByThisUser, updateBookHistory);
 
-historyRouter.get('/:bookId', isAuth, getBookHistory)
+historyRouter.get('/:bookId', isAuth, getBookHistory);
 
 export default historyRouter;
