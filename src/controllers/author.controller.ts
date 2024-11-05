@@ -7,7 +7,7 @@ import slugify from "slugify";
 
 export const registerAuthor: RequestHandler<{}, {}, authorReqBody> = async (req, res) => {
     const { body, user } = req;
-    console.log(user.id);
+
     if (!user.signedUp) {
         return sendErrorResponse({
             res,
@@ -43,8 +43,7 @@ export const updateAuthor: RequestHandler<{}, {}, authorReqBody> = async (req, r
         name: body.name,
         about: body.about,
         socialLinks: body.socialLinks
-    })
-
+    });
 
     res.json({ message: "Author update successful!!!" })
 };

@@ -13,6 +13,7 @@ import authorRouter from './routes/author.route';
 import bookRouter from './routes/book.route';
 import historyRouter from './routes/history.route';
 import reviewRouter from './routes/review.route';
+import cartRouter from "./routes/cart.route";
 
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/author', authorRouter);
 app.use('/book', bookRouter);
 app.use('/review', reviewRouter);
 app.use('/history', historyRouter);
+app.use('/cart', cartRouter);
 
 
 app.use('/test', async (req, res) => {

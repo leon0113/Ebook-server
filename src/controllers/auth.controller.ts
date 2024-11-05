@@ -1,9 +1,8 @@
-import cloudinary from "@/cloud/cloudinary";
 import UserModel from "@/models/user.model";
 import VerificationTokenModel from "@/models/varificationToken.model";
-import { cloudinaryUpload } from "@/utils/uploadFiles";
 import { FormatUserProfile, sendErrorResponse } from "@/utils/helper";
 import { sendVerificationMail } from "@/utils/mail";
+import { cloudinaryUpload } from "@/utils/uploadFiles";
 import crypto from 'crypto';
 import { RequestHandler } from "express";
 import jwt from 'jsonwebtoken';
