@@ -37,7 +37,7 @@ const cartSchema = new Schema<cartDoc>({
 
 const CartModel = model('Cart', cartSchema);
 
-export default CartModel as Model<cartDoc>
+export default CartModel as Model<cartDoc>;
 
 
 

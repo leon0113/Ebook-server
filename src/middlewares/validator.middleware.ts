@@ -176,7 +176,30 @@ export const historyValidationSchema = z.object({
         required_error: "remove highlight is missing!",
         invalid_type_error: "Invalid remove highlight"
     })
+});
+
+export const cartItemSchema = z.object({
+    items: z.array(z.object({
+        product: z.string({
+            required_error: "Book ID is missing!",
+            invalid_type_error: "Invalid book ID"
+        }).transform((value, context) => {
+            if (!isValidObjectId(value)) {
+                context.addIssue({ code: "custom", message: "Invalid book id" });
+                return z.NEVER
+            }
+
+            return value;
+        }),
+        quantity: z.number({
+            required_error: "Quantity is missing!",
+            invalid_type_error: "Invalid quantity"
+        }),
+    }))
 })
+
+
+
 
 //! the main validation function for all the schema's
 export const validate = <T extends ZodRawShape>(schema: ZodObject<T>): RequestHandler => {
