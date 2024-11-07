@@ -1,5 +1,4 @@
-import { model, ObjectId, Schema, Model, Types } from "mongoose";
-import { number } from "zod";
+import { model, Model, Schema, Types } from "mongoose";
 
 export interface BookDoc {
     authorId: Types.ObjectId;
@@ -98,6 +97,13 @@ const bookSchema = new Schema<BookDoc>({
         }
     }
 });
+
+
+bookSchema.pre('save', function (next) {
+    const { mrp, sale } = this.price;
+    this.price = { mrp: mrp * 100, sale: sale * 100 };
+    next();
+})
 
 
 const BookModel = model('Book', bookSchema);
