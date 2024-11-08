@@ -9,11 +9,11 @@ interface OrderItem {
 
 interface OrderDoc {
     userId: ObjectId;
-    stripeCustomerId: string;
-    paymentId: string;
-    totalAmount: number;
-    paymentStatus: string;
-    paymentErrorMessage: string;
+    stripeCustomerId?: string;
+    paymentId?: string;
+    totalAmount?: number;
+    paymentStatus?: string;
+    paymentErrorMessage?: string;
     orderItems: OrderItem[];
     createAt: Date
 }
@@ -26,19 +26,15 @@ const orderSchema = new Schema<OrderDoc>({
     },
     stripeCustomerId: {
         type: String,
-        required: true
     },
     paymentId: {
         type: String,
-        required: true
     },
     totalAmount: {
         type: Number,
-        required: true
     },
     paymentStatus: {
         type: String,
-        required: true
     },
     paymentErrorMessage: {
         type: String
@@ -68,6 +64,6 @@ const orderSchema = new Schema<OrderDoc>({
 }, { timestamps: true });
 
 
-const OderModel = model("Order", orderSchema);
+const OrderModel = model("Order", orderSchema);
 
-export default OderModel as Model<OrderDoc>
+export default OrderModel as Model<OrderDoc>

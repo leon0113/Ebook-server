@@ -1,5 +1,6 @@
 import { BookDoc } from "@/models/books.model";
 import CartModel from "@/models/cart.model";
+import OrderModel from "@/models/order.model";
 import { sanitizeUrl, sendErrorResponse } from "@/utils/helper";
 import { stripe } from "@/utils/stripe";
 import { RequestHandler } from "express";
@@ -17,7 +18,7 @@ export const checkoutHandler: RequestHandler = async (req, res) => {
         })
     };
 
-    const cart = await CartModel.findById(cartId).populate<{ items: { product: BookDoc, quantity: number }[] }>({
+    const cart = await CartModel.findOne({ _id: cartId, userId: req.user.id }).populate<{ items: { product: BookDoc, quantity: number }[] }>({
         path: 'items.product'
     });
 
@@ -29,12 +30,24 @@ export const checkoutHandler: RequestHandler = async (req, res) => {
         })
     };
 
+    const newOrder = await OrderModel.create({
+        userId: req.user.id,
+        orderItems: cart.items.map((item) => {
+            return {
+                id: item.product._id,
+                price: item.product.price.sale,
+                quantity: item.quantity,
+                totalPrice: item.product.price.sale * item.quantity
+            }
+        })
+    })
+
     const customer = await stripe.customers.create({
         name: req.user.name,
         email: req.user.email,
         metadata: {
             userId: req.user.id,
-            cartId,
+            orderId: newOrder._id.toString(),
             type: 'checkout'
         }
     })
