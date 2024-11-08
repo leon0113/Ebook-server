@@ -15,17 +15,19 @@ import historyRouter from './routes/history.route';
 import reviewRouter from './routes/review.route';
 import cartRouter from "./routes/cart.route";
 import checkoutRouter from "./routes/checkout.router";
+import webhookRouter from "./routes/webhook.router";
 
 
 const app = express();
 const port = process.env.PORT || 8000;
 const publicPath = path.join(__dirname, './books');
 
+app.use('/webhook', webhookRouter);
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // to server book data from nodejs 
-app.use('/books', isAuth, isValidReadingRequest, express.static(publicPath))
+app.use('/books', isAuth, isValidReadingRequest, express.static(publicPath));
 
 
 app.use('/auth', authRouter);
@@ -48,8 +50,8 @@ app.use('/test', async (req, res) => {
     res.json({})
 });
 
-app.use(errorHandler)
+app.use(errorHandler);
 
 app.listen(port, () => {
     console.log(`App is running on URL: http://localhost:${port}`);
-})
+});
