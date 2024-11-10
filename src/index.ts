@@ -16,6 +16,7 @@ import reviewRouter from './routes/review.route';
 import cartRouter from "./routes/cart.route";
 import checkoutRouter from "./routes/checkout.router";
 import webhookRouter from "./routes/webhook.router";
+import orderRouter from "./routes/order.route";
 
 
 const app = express();
@@ -37,6 +38,7 @@ app.use('/review', reviewRouter);
 app.use('/history', historyRouter);
 app.use('/cart', cartRouter);
 app.use('/checkout', checkoutRouter);
+app.use('/order', orderRouter);
 
 
 app.use('/test', async (req, res) => {

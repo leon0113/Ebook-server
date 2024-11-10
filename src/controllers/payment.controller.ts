@@ -22,7 +22,7 @@ export const handlePayment: RequestHandler = async (req, res) => {
             const customerId = stripeSession.customer;
 
             const customer = await stripe.customers.retrieve(customerId) as unknown as StripeCustomer;
-            const { orderId, userId } = customer.metadata;
+            const { orderId, type, userId } = customer.metadata;
 
             const order = await OrderModel.findByIdAndUpdate(orderId, {
                 stripeCustomerId: customerId,
@@ -40,9 +40,11 @@ export const handlePayment: RequestHandler = async (req, res) => {
 
                 });
                 // clear cart after order success
-                await CartModel.findOneAndUpdate({ userId }, {
-                    items: []
-                })
+                if (type === 'checkout') {
+                    await CartModel.findOneAndUpdate({ userId }, {
+                        items: []
+                    });
+                };
             }
         }
     } catch (err) {

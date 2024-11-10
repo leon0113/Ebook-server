@@ -15,7 +15,7 @@ interface OrderDoc {
     paymentStatus?: string;
     paymentErrorMessage?: string;
     orderItems: OrderItem[];
-    createAt: Date
+    createdAt: Date
 }
 
 const orderSchema = new Schema<OrderDoc>({
