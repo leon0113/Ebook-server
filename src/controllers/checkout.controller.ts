@@ -4,7 +4,7 @@ import OrderModel from "@/models/order.model";
 import { sanitizeUrl, sendErrorResponse } from "@/utils/helper";
 import { stripe } from "@/utils/stripe";
 import { RequestHandler } from "express";
-import { isValidObjectId, sanitizeFilter } from "mongoose";
+import { isValidObjectId } from "mongoose";
 
 
 export const checkoutHandler: RequestHandler = async (req, res) => {
@@ -88,7 +88,9 @@ export const checkoutHandler: RequestHandler = async (req, res) => {
         console.log(error);
         res.json("Error at purchasing")
     }
-}
+};
+
+//!__________________________________________________________________________________________________________________________
 
 export const instantCheckoutHandler: RequestHandler = async (req, res) => {
     try {
@@ -170,4 +172,4 @@ export const instantCheckoutHandler: RequestHandler = async (req, res) => {
         console.log(error);
         res.json("Error at purchasing")
     }
-}
+};

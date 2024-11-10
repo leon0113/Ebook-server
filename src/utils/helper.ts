@@ -20,7 +20,8 @@ export const FormatUserProfile = (user: UserDoc): Request['user'] => {
         role: user.role,
         avatar: user.avatar?.url,
         signedUp: user.signedUp,
-        authorId: user?.authorId?.toString()
+        authorId: user?.authorId?.toString(),
+        books: user.books.map(book => book.toString())
     }
 };
 

@@ -14,6 +14,7 @@ declare global {
                 avatar?: string;
                 signedUp: boolean;
                 authorId?: string;
+                books?: string[]
             }
         }
     }
