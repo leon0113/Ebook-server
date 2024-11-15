@@ -33,7 +33,7 @@ export const updateCart: RequestHandler<{}, {}, cartItemsReqHandler> = async (re
         cart = await CartModel.create({ userId: req.user.id, items });
     } else {
         for (const item of items) {
-            const oldProduct = cart.items.find((p) => item.product = p.product.toString());
+            const oldProduct = cart.items.find((p) => item.product === p.product.toString());
             if (oldProduct) {
                 oldProduct.quantity += item.quantity;
                 // if the quantity is 0 or less then remove the product from the cart

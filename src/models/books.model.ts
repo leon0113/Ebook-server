@@ -1,7 +1,7 @@
 import { model, Model, Schema, Types } from "mongoose";
 
 export interface BookDoc {
-    _id: Types.ObjectId;
+    _id?: Types.ObjectId;
     authorId: Types.ObjectId;
     title: string;
     slug: string;

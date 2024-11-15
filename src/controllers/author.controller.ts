@@ -65,6 +65,7 @@ export const getAuthorDetails: RequestHandler = async (req, res) => {
         id: author._id,
         name: author.name,
         about: author.about,
-        socials: author.socialLinks
+        socials: author.socialLinks,
+        books: author.books
     })
 }
