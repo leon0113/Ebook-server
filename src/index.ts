@@ -17,6 +17,7 @@ import cartRouter from "./routes/cart.route";
 import checkoutRouter from "./routes/checkout.router";
 import webhookRouter from "./routes/webhook.router";
 import orderRouter from "./routes/order.route";
+import cors from 'cors';
 
 
 const app = express();
@@ -24,6 +25,10 @@ const port = process.env.PORT || 8000;
 const publicPath = path.join(__dirname, './books');
 
 app.use('/webhook', webhookRouter);
+app.use(cors({
+    origin: [process.env.CLIENT_URL!],
+    credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

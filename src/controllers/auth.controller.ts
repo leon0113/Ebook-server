@@ -107,8 +107,8 @@ export const verifyAuthToken: RequestHandler = async (req, res) => {
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // expires in 7 days
     })
 
-    // res.redirect(`${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(FormatUserProfile(user))}`)
-    res.send()
+    res.redirect(`${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(FormatUserProfile(user))}`)
+
 };
 
 //TODO: Get User info

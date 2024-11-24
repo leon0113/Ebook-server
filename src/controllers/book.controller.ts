@@ -30,7 +30,38 @@ interface PopulatedBooks {
 interface settingType {
     lastLocationBook: string;
     highlights: { fill: string; selection: string }[];
-}
+};
+
+interface RecommendedBooks {
+    id: string;
+    title: string;
+    genre: string;
+    slug: string;
+    cover?: string;
+    rating?: string;
+    price: {
+        mrp: string;
+        sale: string;
+    };
+};
+
+export interface AggregationResult {
+    _id: ObjectId;
+    title: string;
+    genre: string;
+    price: {
+        mrp: number;
+        sale: number;
+        _id: ObjectId;
+    };
+    cover?: {
+        url: string;
+        id: string;
+        _id: ObjectId;
+    };
+    slug: string;
+    averageRatings?: number;
+};
 
 export const createNewBook: RequestHandler<{}, {}, createBookReqHandler> = async (req, res) => {
 
@@ -289,36 +320,7 @@ export const generateBookAccessUrl: RequestHandler = async (req, res) => {
 };
 
 
-interface RecommendedBooks {
-    id: string;
-    title: string;
-    genre: string;
-    slug: string;
-    cover?: string;
-    rating: string;
-    price: {
-        mrp: string;
-        sale: string;
-    };
-}
 
-export interface AggregationResult {
-    _id: ObjectId;
-    title: string;
-    genre: string;
-    price: {
-        mrp: number;
-        sale: number;
-        _id: ObjectId;
-    };
-    cover?: {
-        url: string;
-        id: string;
-        _id: ObjectId;
-    };
-    slug: string;
-    averageRatings: number;
-}
 
 export const getRecommendedBooks: RequestHandler = async (req, res) => {
     const { bookId } = req.params;
@@ -344,7 +346,8 @@ export const getRecommendedBooks: RequestHandler = async (req, res) => {
     const recommendedBooks = await BookModel.aggregate<AggregationResult>([
         {
             $match: {
-                genre: book.genre
+                genre: book.genre,
+                _id: { $ne: book._id }
             }
         },
         {
@@ -390,11 +393,11 @@ export const getRecommendedBooks: RequestHandler = async (req, res) => {
         slug: book.slug,
         genre: book.genre,
         price: {
-            mrp: (book.price.mrp / 100).toFixed(2),
-            sale: (book.price.sale / 100).toFixed(2),
+            mrp: (book.price?.mrp / 100).toFixed(2),
+            sale: (book.price?.sale / 100).toFixed(2),
         },
         cover: book.cover?.url,
-        rating: book.averageRatings.toFixed(1),
+        rating: book.averageRatings?.toFixed(1),
     }));
 
     res.json(result);
