@@ -15,7 +15,7 @@ export const getOrders: RequestHandler = async (req, res) => {
             quantity: number;
             totalPrice: number
         }[]
-    }>("orderItems.id");
+    }>("orderItems.id").sort("-createdAt");
 
     res.json({
         orders: orders.map(order => {

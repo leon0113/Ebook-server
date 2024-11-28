@@ -76,7 +76,7 @@ export const getCart: RequestHandler = async (req, res) => {
                 product: {
                     id: item.product._id,
                     title: item.product.title,
-                    cover: item.product.cover,
+                    cover: item.product.cover?.url,
                     slug: item.product.slug,
                     price: {
                         mrp: (item.product.price.mrp / 100).toFixed(2),

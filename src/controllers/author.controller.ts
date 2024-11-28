@@ -1,4 +1,5 @@
 import AuthorModel from "@/models/author.model";
+import { BookDoc } from "@/models/books.model";
 import UserModel from "@/models/user.model";
 import { authorReqBody } from "@/types";
 import { sendErrorResponse } from "@/utils/helper";
@@ -49,23 +50,40 @@ export const updateAuthor: RequestHandler<{}, {}, authorReqBody> = async (req, r
 };
 
 export const getAuthorDetails: RequestHandler = async (req, res) => {
-    const { slug } = req.params;
+    const { id } = req.params;
 
-    const author = await AuthorModel.findOne({ slug });
-
-    if (!author) {
+    const author = await AuthorModel.findById(id).populate<{ books: BookDoc[] }>(
+        "books"
+    );
+    if (!author)
         return sendErrorResponse({
             res,
+            message: "Author not found!",
             status: 404,
-            message: "Author not found"
-        })
-    };
+        });
+
+    const user = await UserModel.findOne({ authorId: author._id });
+    const authorAvatar = user?.avatar || null;
 
     res.json({
         id: author._id,
         name: author.name,
+        avatar: authorAvatar?.url,
         about: author.about,
-        socials: author.socialLinks,
-        books: author.books
-    })
-}
+        socialLinks: author.socialLinks,
+        books: author.books?.map((book) => {
+            return {
+                id: book._id?.toString(),
+                title: book.title,
+                slug: book.slug,
+                genre: book.genre,
+                price: {
+                    mrp: (book.price.mrp / 100).toFixed(2),
+                    sale: (book.price.sale / 100).toFixed(2),
+                },
+                cover: book.cover?.url,
+                rating: book.averageRating?.toFixed(1),
+            };
+        }),
+    });
+};

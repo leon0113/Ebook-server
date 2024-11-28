@@ -31,7 +31,18 @@ const authorSchema = new Schema<AuthorDoc>({
         unique: true
     },
     socialLinks: {
-        type: [String]
+        type: [
+            {
+                id: {
+                    type: String,
+                    required: true
+                },
+                value: {
+                    type: String,
+                    required: true
+                }
+            }
+        ]
     },
     books: [
         {

@@ -13,7 +13,6 @@ import path from "path";
 import slugify from "slugify";
 
 interface PopulatedBooks {
-
     cover?: {
         url: string;
         id: string;
@@ -25,6 +24,7 @@ interface PopulatedBooks {
         slug: string;
     };
     title: string;
+    slug: string;
 };
 
 interface settingType {
@@ -60,7 +60,7 @@ export interface AggregationResult {
         _id: ObjectId;
     };
     slug: string;
-    averageRatings?: number;
+    averageRating?: number;
 };
 
 export const createNewBook: RequestHandler<{}, {}, createBookReqHandler> = async (req, res) => {
@@ -191,7 +191,7 @@ export const updateBook: RequestHandler<{}, {}, updateBookReqHandler> = async (r
 
 
 export const getAllPurchasedBooks: RequestHandler = async (req, res) => {
-    const user = await UserModel.findById(req.user.id).populate<{ books: PopulatedBooks[] }>({ path: "books", select: 'authorId title cover', populate: { path: "authorId", select: 'slug name' } });
+    const user = await UserModel.findById(req.user.id).populate<{ books: PopulatedBooks[] }>({ path: "books", select: 'authorId title cover slug', populate: { path: "authorId", select: 'slug name _id' } });
     if (!user) {
         res.json({ books: [] });
         return;
@@ -202,7 +202,9 @@ export const getAllPurchasedBooks: RequestHandler = async (req, res) => {
             id: book._id,
             title: book.title,
             cover: book.cover?.url,
+            slug: book.slug,
             author: {
+                id: book.authorId._id,
                 name: book.authorId.name,
                 slug: book.authorId.slug
             }
@@ -386,19 +388,74 @@ export const getRecommendedBooks: RequestHandler = async (req, res) => {
         }
     ]);
 
+    console.log(JSON.stringify(recommendedBooks, null, 2));
 
-    const result = recommendedBooks.map<RecommendedBooks>((book) => ({
-        id: book._id.toString(),
-        title: book.title,
-        slug: book.slug,
-        genre: book.genre,
+    const result = recommendedBooks.map<RecommendedBooks>((books) => ({
+        id: books._id.toString(),
+        title: books.title,
+        slug: books.slug,
+        genre: books.genre,
         price: {
-            mrp: (book.price?.mrp / 100).toFixed(2),
-            sale: (book.price?.sale / 100).toFixed(2),
+            mrp: (books.price?.mrp / 100).toFixed(2),
+            sale: (books.price?.sale / 100).toFixed(2),
         },
-        cover: book.cover?.url,
-        rating: book.averageRatings?.toFixed(1),
+        cover: books.cover?.url,
+        rating: books.averageRating?.toFixed(2),
     }));
-
+    // console.log(result);
     res.json(result);
+}
+// book.averageRatings?.toFixed(1)
+
+
+
+
+
+export const getRecommendedBooks1: RequestHandler = async (req, res) => {
+
+    const { bookId } = req.params;
+
+    if (!isValidObjectId(bookId)) {
+        return sendErrorResponse({
+            res,
+            status: 422,
+            message: 'Invalid book id'
+        })
+    };
+
+    const book = await BookModel.findById(bookId);
+
+    if (!book) {
+        return sendErrorResponse({
+            res,
+            status: 404,
+            message: 'Book not found'
+        })
+    };
+    const genre = book.genre;
+
+    const books = await BookModel.find({
+        genre,
+        _id: { $ne: book._id } // Exclude the book with the same _id
+    }).limit(5);
+
+
+    res.json({
+        books: books.map((book) => {
+            const { _id, title, cover, averageRating, slug, genre, price: { mrp, sale }, language } = book;
+            return {
+                id: _id,
+                title,
+                cover: cover?.url,
+                slug,
+                genre,
+                rating: averageRating?.toFixed(1),
+                language,
+                price: {
+                    mrp: (mrp / 100).toFixed(2),
+                    sale: (sale / 100).toFixed(2)
+                },
+            }
+        })
+    })
 }
