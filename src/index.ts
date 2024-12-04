@@ -25,8 +25,8 @@ const port = process.env.PORT || 8000;
 const publicPath = path.join(__dirname, './books');
 
 app.use('/webhook', webhookRouter);
-app.use('*', cors({
-    origin: [process.env.CLIENT_URL!],
+app.use(cors({
+    origin: "https://ebook-client-ten.vercel.app",
     credentials: true,
 }));
 app.use((req, res, next) => {
