@@ -180,7 +180,7 @@ export const historyValidationSchema = z.object({
     removeHighlight: z.boolean({
         required_error: "remove highlight is missing!",
         invalid_type_error: "Invalid remove highlight"
-    })
+    }).optional()
 });
 
 export const cartItemSchema = z.object({

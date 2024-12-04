@@ -85,7 +85,7 @@ export const checkoutHandler: RequestHandler = async (req, res) => {
             })
         }
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.json("Error at purchasing")
     }
 };
@@ -169,7 +169,7 @@ export const instantCheckoutHandler: RequestHandler = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.json("Error at purchasing")
     }
 };

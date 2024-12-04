@@ -10,7 +10,7 @@ export const updateBookHistory: RequestHandler = async (
     req,
     res
 ) => {
-    const { bookId, highlights = [], lastLocation, removeHighlight } = req.body;
+    const { bookId, highlights, lastLocation, removeHighlight } = req.body;
 
     let history = await HistoryModel.findOne({
         bookId,

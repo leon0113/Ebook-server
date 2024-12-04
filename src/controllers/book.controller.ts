@@ -303,8 +303,6 @@ export const generateBookAccessUrl: RequestHandler = async (req, res) => {
 
     const history = await HistoryModel.findOne({ bookId: book._id, userId: user._id });
 
-
-
     const settings: settingType = {
         lastLocationBook: '',
         highlights: []
@@ -314,14 +312,12 @@ export const generateBookAccessUrl: RequestHandler = async (req, res) => {
         settings.highlights = history.highlights.map(h => ({ fill: h.fill, selection: h.selection }));
         settings.lastLocationBook = history.lastLocationBook;
     }
-
+    // console.log(settings);
     res.json({
         settings,
         url: `${process.env.BOOK_API_URL}/${book.fileInfo.id}`
     })
 };
-
-
 
 
 export const getRecommendedBooks: RequestHandler = async (req, res) => {
@@ -388,7 +384,7 @@ export const getRecommendedBooks: RequestHandler = async (req, res) => {
         }
     ]);
 
-    console.log(JSON.stringify(recommendedBooks, null, 2));
+    // console.log(JSON.stringify(recommendedBooks, null, 2));
 
     const result = recommendedBooks.map<RecommendedBooks>((books) => ({
         id: books._id.toString(),
@@ -404,8 +400,7 @@ export const getRecommendedBooks: RequestHandler = async (req, res) => {
     }));
     // console.log(result);
     res.json(result);
-}
-// book.averageRatings?.toFixed(1)
+};
 
 
 
@@ -437,7 +432,7 @@ export const getRecommendedBooks1: RequestHandler = async (req, res) => {
     const books = await BookModel.find({
         genre,
         _id: { $ne: book._id } // Exclude the book with the same _id
-    }).limit(5);
+    });
 
 
     res.json({

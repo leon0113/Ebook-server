@@ -18,6 +18,7 @@ import checkoutRouter from "./routes/checkout.router";
 import webhookRouter from "./routes/webhook.router";
 import orderRouter from "./routes/order.route";
 import cors from 'cors';
+import morgan from "morgan";
 
 
 const app = express();
@@ -32,6 +33,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(morgan('dev'))
 // to server book data from nodejs 
 app.use('/books', isAuth, isValidReadingRequest, express.static(publicPath));
 
@@ -47,14 +49,7 @@ app.use('/order', orderRouter);
 
 
 app.use('/test', async (req, res) => {
-    const form = formidable({
-        uploadDir: path.join(__dirname, './books'),
-        filename(name, ext, part, form) {
-            return name + '.jpg'
-        },
-    });
-    await form.parse(req)
-    res.json({})
+    res.status(200).json("Running successfully")
 });
 
 app.use(errorHandler);
