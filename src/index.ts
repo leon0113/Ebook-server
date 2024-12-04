@@ -22,7 +22,7 @@ import morgan from "morgan";
 
 const app = express();
 const port = process.env.PORT || 8000;
-const publicPath = path.join(__dirname, './books');
+const publicPath = path.join(__dirname, './tmp/books');
 
 app.use('/webhook', webhookRouter);
 app.use(cors({
