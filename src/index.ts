@@ -3,7 +3,6 @@ import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import express from 'express';
 import 'express-async-errors';
-import formidable from 'formidable';
 import path from 'path';
 import { errorHandler } from "./middlewares/error.middleware";
 import { isAuth } from './middlewares/isAuth.middleware';
@@ -27,9 +26,17 @@ const publicPath = path.join(__dirname, './books');
 
 app.use('/webhook', webhookRouter);
 app.use(cors({
-    origin: [process.env.CLIENT_URL!],
+    origin: "https://ebook-client-ten.vercel.app",
     credentials: true,
 }));
+// app.use((req, res, next) => {
+//     res.header("Access-Control-Allow-Origin", process.env.CLIENT_URL!);
+//     res.header("Access-Control-Allow-Credentials", "true");
+//     res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+//     next();
+// });
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
