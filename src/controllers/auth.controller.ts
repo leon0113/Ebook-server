@@ -101,10 +101,14 @@ export const verifyAuthToken: RequestHandler = async (req, res) => {
 
 
     res.cookie('authToken', authToken, {
+        // httpOnly: true,
+        // secure: process.env.NODE_ENV !== 'development',
+        // sameSite: 'none',
+        // expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // expires in 7 days
         httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development',
-        sameSite: 'strict',
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // expires in 7 days
+        secure: true, // Always true in production
+        sameSite: 'none', // Required for cross-origin cookies
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // Expires in 7 days
     })
     // const isDevModeOn = process.env.NODE_ENV === "development";
     // res.cookie("authToken", authToken, {
