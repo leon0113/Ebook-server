@@ -100,12 +100,19 @@ export const verifyAuthToken: RequestHandler = async (req, res) => {
     });
 
 
-    res.cookie('authToken', authToken, {
+    // res.cookie('authToken', authToken, {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV !== 'development',
+    //     sameSite: 'strict',
+    //     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // expires in 7 days
+    // })
+    const isDevModeOn = process.env.NODE_ENV === "development";
+    res.cookie("authToken", authToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development',
-        sameSite: 'strict',
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // expires in 7 days
-    })
+        secure: !isDevModeOn,
+        sameSite: isDevModeOn ? "strict" : "none",
+        expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+    });
 
     res.redirect(`${process.env.AUTH_SUCCESS_URL}?profile=${JSON.stringify(FormatUserProfile(user))}`)
 
