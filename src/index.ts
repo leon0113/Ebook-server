@@ -25,7 +25,7 @@ const port = process.env.PORT || 8000;
 const publicPath = path.join(__dirname, './books');
 
 app.use('/webhook', webhookRouter);
-app.use(cors({
+app.use('*', cors({
     origin: [process.env.CLIENT_URL!],
     credentials: true,
 }));
