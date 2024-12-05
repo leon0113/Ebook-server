@@ -43,7 +43,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(morgan('dev'))
 // to server book data from nodejs 
-app.use('/books', isAuth, isValidReadingRequest, express.static(publicPath));
+app.use('/tmp/books', isAuth, isValidReadingRequest, express.static(publicPath));
 
 
 app.use('/auth', authRouter);
