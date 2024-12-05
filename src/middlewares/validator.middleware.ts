@@ -3,7 +3,8 @@ import { isValidObjectId } from "mongoose";
 import { z, ZodObject, ZodRawShape, ZodType } from "zod";
 
 export const emailValidationSchema = z.object({
-    email: z.string({ required_error: "Email is missing!", invalid_type_error: "Invalid Email type!" }).email("Invalid email!")
+    email: z.string({ required_error: "Email is missing!", invalid_type_error: "Invalid Email type!" }).email("Invalid email!"),
+    recaptchaToken: z.string({ required_error: "recaptchaToken is missing!", invalid_type_error: "Invalid recaptchaToken type!" }),
 });
 
 export const newUserSchema = z.object({

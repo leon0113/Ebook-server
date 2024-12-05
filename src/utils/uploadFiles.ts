@@ -38,6 +38,7 @@ export const uploadBookToLocalDir = (book: File, uniqueFileName: string) => {
     };
 
     const filePath = path.join(bookStoragePath, uniqueFileName);
+    console.log(filePath);
     fs.writeFileSync(filePath, fs.readFileSync(book.filepath));
 
 

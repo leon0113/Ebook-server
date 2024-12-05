@@ -6,6 +6,7 @@ import { cloudinaryUpload } from "@/utils/uploadFiles";
 import crypto from 'crypto';
 import { RequestHandler } from "express";
 import jwt from 'jsonwebtoken';
+import axios from "axios";
 
 
 //TODO: generate authentication link and send that link to users email address
@@ -20,7 +21,34 @@ export const generateAuthLink: RequestHandler = async (req, res) => {
     */
 
     //! 0. Find the user in the db or create
-    const { email } = req.body;
+    const { email, recaptchaToken } = req.body;
+
+    if (!recaptchaToken) {
+        return sendErrorResponse({
+            status: 400,
+            message: 'reCAPTCHA token is required',
+            res,
+        })
+    }
+
+    const { data } = await axios.post(
+        `https://www.google.com/recaptcha/api/siteverify`,
+        null,
+        {
+            params: {
+                secret: process.env.RECAPTCHA_SECRET_KEY, // Replace with your actual secret key
+                response: recaptchaToken,
+            },
+        }
+    );
+
+    if (!data.success) {
+        return sendErrorResponse({
+            status: 400,
+            message: 'Invalid reCAPTCHA token',
+            res,
+        })
+    }
 
     let user = await UserModel.findOne({ email });
 
