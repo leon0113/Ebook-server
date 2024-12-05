@@ -26,7 +26,7 @@ const publicPath = path.join('/tmp', 'books');
 
 app.use('/webhook', webhookRouter);
 app.use(cors({
-    origin: "https://ebook-client-ten.vercel.app",
+    origin: ["http://localhost:5173", "https://ebook-client-ten.vercel.app", "https://www.tahjib.online"],
     credentials: true,
 }));
 app.use((req, res, next) => {
