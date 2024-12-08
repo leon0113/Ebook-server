@@ -2,11 +2,12 @@ import UserModel from "@/models/user.model";
 import VerificationTokenModel from "@/models/varificationToken.model";
 import { FormatUserProfile, sendErrorResponse } from "@/utils/helper";
 import { sendVerificationMail } from "@/utils/mail";
-import { cloudinaryUpload } from "@/utils/uploadFiles";
+import { updateAvatarToAWS } from "@/utils/uploadFiles";
+import axios from "axios";
 import crypto from 'crypto';
 import { RequestHandler } from "express";
 import jwt from 'jsonwebtoken';
-import axios from "axios";
+import slugify from "slugify";
 
 
 //TODO: generate authentication link and send that link to users email address
@@ -181,7 +182,16 @@ export const updateProfile: RequestHandler = async (req, res) => {
 
     if (file && !Array.isArray(file)) {
 
-        user.avatar = await cloudinaryUpload(file, user.avatar?.id);
+        // user.avatar = await cloudinaryUpload(file, user.avatar?.id);
+
+        // upload avatar to aws bucket
+        const uniqueFileName = `${user._id}-${slugify(req.body.name, {
+            lower: true,
+            replacement: '-'
+        })}.jpg`;
+
+        user.avatar = await updateAvatarToAWS(file, uniqueFileName, user.avatar?.id)
+
         await user.save();
     }
 

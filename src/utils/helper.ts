@@ -1,3 +1,4 @@
+import { BookDoc } from "@/models/books.model";
 import { UserDoc } from "@/models/user.model";
 import { Request, Response } from "express";
 
@@ -25,6 +26,51 @@ export const FormatUserProfile = (user: UserDoc): Request['user'] => {
     }
 };
 
+interface FormattedBooks {
+    id: string;
+    title: string;
+    genre: string;
+    slug: string;
+    cover?: string;
+    rating?: string;
+    price: {
+        mrp: string;
+        sale: string;
+    };
+    sold?: number
+}
+
+
+export const formatBook = (book: BookDoc): FormattedBooks => {
+
+    const {
+        _id,
+        title,
+        cover,
+        averageRating,
+        slug,
+        genre,
+        price: { mrp, sale },
+        copySold
+    } = book;
+
+
+    return {
+        id: _id?.toString() || '',
+        title,
+        cover: cover?.url,
+        slug,
+        genre,
+        rating: averageRating?.toFixed(1),
+        price: {
+            mrp: (mrp / 100).toFixed(2),
+            sale: (sale / 100).toFixed(2),
+        },
+        sold: copySold
+    };
+
+};
+
 
 export function formatFileSize(bytes: number) {
     if (bytes === 0) return "0 Bytes";
@@ -37,4 +83,11 @@ export function formatFileSize(bytes: number) {
 
 export function sanitizeUrl(url: string) {
     return url.replace(/ /g, "%20")
-}
+};
+
+
+export const generateS3ClientPublicUrl = (bucketName: string, uniqueFileName: string): string => {
+    return `https://${bucketName}.s3.amazonaws.com/${uniqueFileName}`
+};
+
+

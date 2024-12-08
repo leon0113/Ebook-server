@@ -17,7 +17,7 @@ import checkoutRouter from "./routes/checkout.router";
 import webhookRouter from "./routes/webhook.router";
 import orderRouter from "./routes/order.route";
 import cors from 'cors';
-import morgan from "morgan";
+import searchRouter from "./routes/search.router";
 
 
 const app = express();
@@ -30,7 +30,7 @@ app.use(cors({
     credentials: true,
 }));
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", process.env.CLIENT_URL || "https://ebook-client-ten.vercel.app");
+    res.header("Access-Control-Allow-Origin", process.env.CLIENT_URL || "https://www.tahjib.online");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
@@ -41,9 +41,9 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(morgan('dev'))
+// app.use(morgan('dev'))
 // to server book data from nodejs 
-app.use('/tmp/books', express.static(publicPath));
+// app.use('/tmp/books', express.static(publicPath));
 
 
 app.use('/auth', authRouter);
@@ -54,6 +54,7 @@ app.use('/history', historyRouter);
 app.use('/cart', cartRouter);
 app.use('/checkout', checkoutRouter);
 app.use('/order', orderRouter);
+app.use('/search', searchRouter);
 
 
 app.use('/test', async (req, res) => {

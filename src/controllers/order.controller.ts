@@ -1,4 +1,4 @@
-import { BookDoc } from "@/models/books.model";
+import BookModel, { BookDoc } from "@/models/books.model";
 import OrderModel from "@/models/order.model";
 import UserModel from "@/models/user.model";
 import { StripeCustomer } from "@/types";
@@ -95,7 +95,22 @@ export const getOrderSuccessStatus: RequestHandler = async (req, res) => {
                 message: 'Order not found',
                 status: 404
             })
-        }
+        };
+
+
+        // Update the `copySold` field in the BookModel
+        const bulkUpdates = order.orderItems.map(async ({ id: book, quantity }) => {
+            if (book && book._id) {
+                await BookModel.findByIdAndUpdate(
+                    book._id,
+                    { $inc: { copySold: quantity / 2 } }, // Increment `copySold` by the quantity
+                    { new: true } // Return the updated document
+                );
+            }
+        });
+
+        // Wait for all updates to complete
+        await Promise.all(bulkUpdates);
 
         const data = order.orderItems.map(({ id: book, price, quantity, totalPrice }) => {
             return {
@@ -108,6 +123,7 @@ export const getOrderSuccessStatus: RequestHandler = async (req, res) => {
                 totalPrice: (totalPrice / 100).toFixed(2)
             }
         });
+
 
         res.json({ orders: data, totalAmount: order.totalAmount ? (order.totalAmount / 100).toFixed(2) : '00' });
         return;

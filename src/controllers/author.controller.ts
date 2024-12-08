@@ -2,7 +2,7 @@ import AuthorModel from "@/models/author.model";
 import { BookDoc } from "@/models/books.model";
 import UserModel from "@/models/user.model";
 import { authorReqBody } from "@/types";
-import { sendErrorResponse } from "@/utils/helper";
+import { FormatUserProfile, sendErrorResponse } from "@/utils/helper";
 import { RequestHandler } from "express";
 import slugify from "slugify";
 
@@ -32,9 +32,14 @@ export const registerAuthor: RequestHandler<{}, {}, authorReqBody> = async (req,
     newAuthor.slug = uniqueSlug;
     await newAuthor.save();
 
-    await UserModel.findByIdAndUpdate(user.id, { role: 'author', authorId: newAuthor._id });
+    const updatedUser = await UserModel.findByIdAndUpdate(user.id, { role: 'author', authorId: newAuthor._id }, { new: true });
 
-    res.json({ message: "Author registration successful!!!" })
+    let newUser;
+    if (updatedUser) {
+        newUser = FormatUserProfile(updatedUser)
+    }
+
+    res.json({ message: "Author registration successful!!!", user: newUser })
 };
 
 export const updateAuthor: RequestHandler<{}, {}, authorReqBody> = async (req, res) => {
@@ -83,7 +88,38 @@ export const getAuthorDetails: RequestHandler = async (req, res) => {
                 },
                 cover: book.cover?.url,
                 rating: book.averageRating?.toFixed(1),
+                sold: book.copySold
             };
         }),
     });
 };
+
+
+export const getBooksByAuthor: RequestHandler = async (req, res) => {
+    const { authorId } = req.params;
+
+    const author = await AuthorModel.findById(authorId).populate<{ books: BookDoc[] }>(
+        "books"
+    );
+
+    if (!author)
+        return sendErrorResponse({
+            res,
+            message: "Author not found!",
+            status: 404,
+        });
+
+
+    res.json({
+        books: author.books?.map((book) => {
+            return {
+                id: book._id?.toString(),
+                title: book.title,
+                slug: book.slug,
+                cover: book.cover?.url,
+                status: book.status,
+                sold: book.copySold
+            };
+        }),
+    });
+}

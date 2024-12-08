@@ -8,7 +8,7 @@ export const emailValidationSchema = z.object({
 });
 
 export const newUserSchema = z.object({
-    name: z.string({ required_error: "Name is missing!", invalid_type_error: "Invalid" }).min(3, 'Name must be 3 character long!').trim()
+    name: z.string({ required_error: "Name is missing!", invalid_type_error: "Invalid" }).min(3, 'Name must be 3 character long!').max(20, 'Name is too long').trim()
 });
 
 export const newAuthorSchema = z.object({
@@ -58,6 +58,11 @@ export const commonBookSchema = {
         required_error: "Genre is missing!",
         invalid_type_error: "Invalid genre"
     }).trim(),
+
+    status: z.enum(["publish", "unpublish"], {
+        required_error: "Please select a status",
+        invalid_type_error: "Invalid status"
+    }),
 
     price: z.string({
         required_error: "Price is missing!",

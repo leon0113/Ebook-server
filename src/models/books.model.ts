@@ -11,6 +11,8 @@ export interface BookDoc {
     publicationName: string;
     genre: string;
     averageRating?: number,
+    status: "publish" | "unpublish",
+    copySold?: number,
     price: {
         mrp: number,
         sale: number
@@ -69,6 +71,15 @@ const bookSchema = new Schema<BookDoc>({
         type: Date,
         required: true
     },
+    status: {
+        type: String,
+        enum: ["publish", "unpublish"],
+        default: "publish"
+    },
+    copySold: {
+        type: Number,
+        default: 0
+    },
     price: {
         type: Object,
         required: true,
@@ -97,7 +108,7 @@ const bookSchema = new Schema<BookDoc>({
             required: true
         }
     }
-});
+}, { timestamps: true });
 
 
 bookSchema.pre('save', function (next) {
